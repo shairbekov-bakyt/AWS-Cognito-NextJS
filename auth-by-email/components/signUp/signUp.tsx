@@ -1,11 +1,10 @@
 import React, {useState} from "react";
 import {useFormik} from 'formik';
-import {validationSchema} from "./validate";
+import {validationSchema} from "../signIn/validate";
 import UserPoll from "../UserPoll"
-import * as S from "./styles";
-import {AuthenticationDetails, CognitoUser} from "amazon-cognito-identity-js";
+import * as S from "../signIn/styles";
 
-export const SignIn = () => {
+export const SignUp = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState(false);
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
@@ -19,27 +18,11 @@ export const SignIn = () => {
         validateOnChange: isValidateOnChange,
         onSubmit: values => {
             //@ts-ignore
-            const user = new CognitoUser({
-                Username: formik.values.email,
-                Pool: UserPoll
-            })
-
-            const authDetails = new AuthenticationDetails({
-                Username: formik.values.email,
-                Password: formik.values.password
-            })
-
-            user.authenticateUser(authDetails, {
-                onSuccess: (data: any) => {
-                    alert("Success")
-                },
-                onFailure: (err: any) => {
-                    alert("Error")
-                    console.log(err)
-                },
-                newPasswordRequired: (data: any) => {
-                    console.log("newPasswordRequired ", data)
-                },
+            UserPoll.signUp(formik.values.email, formik.values.password, [], null, (err, data) => {
+                if (err) {
+                    console.error(err)
+                }
+                console.log(data)
             })
         },
         validate: () => {
@@ -51,7 +34,7 @@ export const SignIn = () => {
         <S.Content>
             <S.Form onSubmit={formik.handleSubmit}>
                 <div>
-                    <S.FormTitle> Sign In </ S.FormTitle>
+                    <S.FormTitle> SignUp </ S.FormTitle>
                 </div>
                 <div>
                     <div>
