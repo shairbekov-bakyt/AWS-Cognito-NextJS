@@ -17,8 +17,7 @@ export const SignUp = () => {
         validationSchema: validationSchema,
         validateOnChange: isValidateOnChange,
         onSubmit: values => {
-            //@ts-ignore
-            UserPoll.signUp(formik.values.email, formik.values.password, [], null, (err, data) => {
+            UserPoll.signUp(formik.values.email, formik.values.password, [], [], (err, data) => {
                 if (err) {
                     console.error(err)
                 }
