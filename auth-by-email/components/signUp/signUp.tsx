@@ -35,8 +35,8 @@ export const SignUp = () => {
                 <div>
                     <S.FormTitle> SignUp </ S.FormTitle>
                 </div>
-                <div>
-                    <div>
+                <div style={{width:'100%'}}>
+                    <div style={{width:'100%'}}>
                         <S.Input
                             type="email"
                             {...formik.getFieldProps("email")}

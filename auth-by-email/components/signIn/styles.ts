@@ -15,6 +15,7 @@ export const AView = styled.span`
 
 export const Div = styled.div`
   position: relative;
+ 
 `;
 export const ANoView = styled.span`
   margin-top: 13px;
@@ -24,13 +25,13 @@ export const ANoView = styled.span`
 `;
 
 export const Input = styled.input`
+  min-width: 100%;
   padding: 10px;
   border-width: 1px;
   border-style: solid;
   z-index: 1;
   border-color: ${(props: { isError?: boolean }) => props.isError ? "red" : "gray"};
   border-radius: 5px;
-
   &:focus {
     border-color: blue;
   }
@@ -41,7 +42,9 @@ export const FormTitle = styled.h1`
   padding: 7px;
 `;
 export const Content = styled.div`
-  height: 100vh;
+  height: auto;
+  padding: 20px;
+  margin-top: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,7 +74,9 @@ export const Button = styled.button`
 
 export const SubmitButton = styled.button`
   padding: 5px;
+  width: 100%;
   border: 1px solid black;
+  border-radius: 5px;
 `;
 
 export const ErrorLabel = styled.p`
@@ -81,3 +86,4 @@ export const ErrorLabel = styled.p`
   font-size: 12px;
   width: 100%;
 `;
+
