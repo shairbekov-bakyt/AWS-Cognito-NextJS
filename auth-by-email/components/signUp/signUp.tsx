@@ -1,13 +1,19 @@
 import React, {useState} from "react";
 import {useFormik} from 'formik';
 import {validationSchema} from "../signIn/validate";
-import UserPoll from "../UserPoll"
 import * as S from "../signIn/styles";
+import {assertForXStatement} from "@babel/types";
+import axios from "axios";
 
 export const SignUp = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState(false);
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
+    const sendData = (username: string, password: string) => {
+        axios.post('http://localhost:3000/api/v1/users/signUp', {email: username, password})
+            .then((response) => alert(response.data.message))
+            .catch((err) => console.log(err))
+    }
     const toggleIsVisible = () => setIsVisible(prev => !prev);
     const formik = useFormik({
         initialValues: {
@@ -16,13 +22,9 @@ export const SignUp = () => {
         },
         validationSchema: validationSchema,
         validateOnChange: isValidateOnChange,
-        onSubmit: values => {
-            UserPoll.signUp(formik.values.email, formik.values.password, [], [], (err, data) => {
-                if (err) {
-                    console.error(err)
-                }
-                console.log(data)
-            })
+        onSubmit: (values, {resetForm}) => {
+            sendData(formik.values.email, formik.values.password)
+            resetForm()
         },
         validate: () => {
             setIsValidateOnChange(true);
@@ -35,8 +37,8 @@ export const SignUp = () => {
                 <div>
                     <S.FormTitle> SignUp </ S.FormTitle>
                 </div>
-                <div style={{width:'100%'}}>
-                    <div style={{width:'100%'}}>
+                <div style={{width: '100%'}}>
+                    <div style={{width: '100%'}}>
                         <S.Input
                             type="email"
                             {...formik.getFieldProps("email")}
@@ -60,12 +62,13 @@ export const SignUp = () => {
                             color: `${active ? "blue" : "gray"}`,
                         }}>
                             Email
+
                         </div>
                         <S.ErrorLabel>{formik.errors.email}</S.ErrorLabel>
                     </div>
                     <S.Div>
                         <S.Input isError={Boolean(formik.errors.password)}
-                                 type={isVisible ? "password" : "text"}  {...formik.getFieldProps("password")}/>
+                                 type={isVisible ? "text" : "password"}  {...formik.getFieldProps("password")}/>
                         <S.ErrorLabel>{formik.errors.password}</S.ErrorLabel>
                         <S.Button
                             type="button"

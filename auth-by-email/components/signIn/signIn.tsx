@@ -1,15 +1,30 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import {useFormik} from 'formik';
 import {validationSchema} from "./validate";
-import UserPoll from "../UserPoll"
 import * as S from "./styles";
-import {AuthenticationDetails, CognitoUser} from "amazon-cognito-identity-js";
+import axios from "axios";
 
-export const SignIn = () => {
+
+export const SignIn = (props: {isAuth: boolean, setIsAuth: any}) => {
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState(false);
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
     const toggleIsVisible = () => setIsVisible(prev => !prev);
+    const setLocalStorage = (email: string, accessToken: string, refreshToken: string) => {
+        localStorage.setItem("email", email)
+        localStorage.setItem("accessToken", accessToken)
+        localStorage.setItem("refreshToken", refreshToken)
+        props.setIsAuth(true)
+    }
+    const sendData = (email: string, password: string) => {
+        axios.post('http://localhost:3000/api/v1/users/signIn', {email, password})
+            .then((response) => {
+                const {email, accessToken, refreshToken} = response.data
+                setLocalStorage(email, accessToken, refreshToken)
+            })
+            .catch((err) => console.log(err))
+    }
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -17,35 +32,13 @@ export const SignIn = () => {
         },
         validationSchema: validationSchema,
         validateOnChange: isValidateOnChange,
-        onSubmit: values => {
-            //@ts-ignore
-            const user = new CognitoUser({
-                Username: formik.values.email,
-                Pool: UserPoll
-            })
-
-            const authDetails = new AuthenticationDetails({
-                Username: formik.values.email,
-                Password: formik.values.password
-            })
-
-            user.authenticateUser(authDetails, {
-                onSuccess: (data: any) => {
-                    alert("Success")
-                },
-                onFailure: (err: any) => {
-                    alert("Error")
-                    console.log(err)
-                },
-                newPasswordRequired: (data: any) => {
-                    console.log("newPasswordRequired ", data)
-                },
-            })
+        onSubmit: (values, {resetForm}) => {
+            resetForm()
+            sendData(formik.values.email, formik.values.password)
         },
         validate: () => {
             setIsValidateOnChange(true);
         }
-
     });
     return (
         <S.Content>
@@ -53,8 +46,8 @@ export const SignIn = () => {
                 <div>
                     <S.FormTitle> Sign In </ S.FormTitle>
                 </div>
-                <div style={{width:'100%'}}>
-                    <div style={{width:'100%'}}>
+                <div style={{width: '100%'}}>
+                    <div style={{width: '100%'}}>
                         <S.Input
                             type="email"
                             {...formik.getFieldProps("email")}
@@ -83,7 +76,7 @@ export const SignIn = () => {
                     </div>
                     <S.Div>
                         <S.Input isError={Boolean(formik.errors.password)}
-                                 type={isVisible ? "password" : "text"}  {...formik.getFieldProps("password")}/>
+                                 type={isVisible ? "text" : "password"}  {...formik.getFieldProps("password")}/>
                         <S.ErrorLabel>{formik.errors.password}</S.ErrorLabel>
                         <S.Button
                             type="button"
@@ -107,7 +100,7 @@ export const SignIn = () => {
                             d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/>
                     </S.Svg>
                 </div>
-                <S.SubmitButton type="submit">Signin</S.SubmitButton>
+                <S.SubmitButton type="submit">SignIn</S.SubmitButton>
             </S.Form>
         </S.Content>
     );
